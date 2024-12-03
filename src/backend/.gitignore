@@ -1,0 +1,33 @@
+# Backend Service .gitignore
+# Addresses requirement: Version Control Hygiene
+# Ensures sensitive and unnecessary files are not committed to the repository
+
+# Python bytecode files
+*.pyc
+
+# Python cache directories
+__pycache__/
+
+# Log files
+*.log
+
+# Environment configuration files (containing sensitive information)
+.env
+
+# Virtual environment
+venv/
+
+# Database migration files (if not explicitly tracked)
+migrations/
+
+# SQLite database files
+*.sqlite3
+
+# Node.js dependencies (if present)
+node_modules/
+
+# Build artifacts
+dist/
+
+# Dependency lock files
+*.lock
