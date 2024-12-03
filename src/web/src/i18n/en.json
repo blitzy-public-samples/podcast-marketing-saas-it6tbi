@@ -1,0 +1,32 @@
+{
+  "welcome_message": "Welcome to the Podcast Marketing Automation Platform",
+  "auth": {
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "episodes": "Episodes",
+    "marketing": "Marketing",
+    "analytics": "Analytics",
+    "settings": "Settings"
+  },
+  "actions": {
+    "upload_episode": "Upload Episode",
+    "schedule_post": "Schedule Post",
+    "view_analytics": "View Analytics"
+  },
+  "preferences": {
+    "language": "Language",
+    "theme": {
+      "label": "Theme",
+      "dark_mode": "Dark Mode",
+      "light_mode": "Light Mode"
+    }
+  },
+  "meta": {
+    "language_code": "en",
+    "language_name": "English",
+    "direction": "ltr"
+  }
+}
