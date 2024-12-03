@@ -1,0 +1,82 @@
+# Requirements Addressed: Dependency Management
+# Location: Technical Specification/9. TECHNOLOGY STACK/9.2 FRAMEWORKS & LIBRARIES
+# Description: Defines and manages Python dependencies for the backend services
+
+[tool.poetry]
+name = "podcast-marketing-backend"
+version = "1.0.0"
+description = "Backend services for the Podcast Marketing Automation SaaS platform."
+authors = ["Development Team"]
+license = "MIT"
+python = "^3.11"
+
+# Requirements Addressed: Backend Configuration
+# Location: 7.3 Technical Decisions/7.3.1 Architecture Patterns
+# Description: Centralizes configuration for Python tools and dependencies
+
+[tool.poetry.dependencies]
+Django = ">=4.2"
+djangorestframework = ">=3.14"
+celery = ">=5.3"
+redis = ">=4.5"
+psycopg2 = ">=2.9"
+timescale = ">=2.11"
+openai = ">=0.27"
+boto3 = ">=1.26"
+pandas = ">=2.0"
+
+[tool.poetry.dev-dependencies]
+pytest = ">=7.4.0"
+pytest-django = ">=4.5.2"
+pytest-cov = ">=4.1.0"
+mypy = ">=1.5.1"
+flake8 = ">=6.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest]
+addopts = "--cov=src/backend --cov-report=html --cov-report=term"
+testpaths = ["src/backend"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+django_settings_module = "core.settings.test"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+ignore_missing_imports = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+warn_unused_ignores = true
+check_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_configs = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+disallow_any_unimported = true
+
+[tool.mypy.plugins.django-stubs]
+django_settings_module = "src.backend.core.settings.base"
+
+[tool.flake8]
+max-line-length = 88
+exclude = [
+    ".git",
+    "__pycache__",
+    "migrations",
+    "venv",
+    "node_modules"
+]
+ignore = "E203,W503"
+max-complexity = 10
+show-source = true
+statistics = true
+format = "%(path)s:%(row)d:%(col)d: %(code)s %(text)s"
+indent-size = 4
+docstring-convention = "google"
