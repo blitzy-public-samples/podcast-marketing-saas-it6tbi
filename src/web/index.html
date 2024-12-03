@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!-- Requirement: Frontend Architecture (1.2 System Overview/High-Level Description) -->
+  <!-- Entry point for the React-based SPA providing the root container -->
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Requirement: User Interface Design (8.1 User Interface Design/Design Specifications) -->
+    <!-- Application metadata and SEO optimization -->
+    <meta name="description" content="Podcast Marketing Automation Platform">
+    <meta name="theme-color" content="#ffffff">
+    
+    <!-- Requirement: Multi-language Support (8.1 User Interface Design/Design Specifications) -->
+    <!-- Language configuration for i18n support -->
+    <meta property="og:locale" content="en">
+    <meta property="og:locale:alternate" content="es">
+    <meta property="og:locale:alternate" content="fr">
+    
+    <title>Podcast Marketing Automation Platform</title>
+
+    <!-- Requirement: User Interface Design (8.1 User Interface Design/Design Specifications) -->
+    <!-- Global styles and assets -->
+    <link rel="stylesheet" href="/src/styles/globals.css">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Web crawler instructions -->
+    <link rel="robots" href="/robots.txt">
+
+    <!-- Preload critical assets -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Requirement: User Interface Design (8.1 User Interface Design/Design Specifications) -->
+    <!-- Font loading optimization -->
+    <link 
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" 
+      rel="stylesheet">
+
+    <!-- PWA meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Podcast Marketing">
+    <link rel="apple-touch-icon" href="/logo192.png">
+  </head>
+  <body>
+    <!-- Requirement: Frontend Architecture (1.2 System Overview/High-Level Description) -->
+    <!-- Root container for React application -->
+    <div id="root"></div>
+
+    <!-- Application scripts -->
+    <script type="module" src="/static/js/main.js"></script>
+
+    <!-- Fallback for JavaScript disabled browsers -->
+    <noscript>
+      <div style="text-align: center; padding: 2rem;">
+        <h1>JavaScript Required</h1>
+        <p>Please enable JavaScript to use the Podcast Marketing Automation Platform.</p>
+      </div>
+    </noscript>
+  </body>
+</html>
