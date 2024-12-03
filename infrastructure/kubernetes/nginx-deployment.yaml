@@ -1,0 +1,102 @@
+# Human Tasks:
+# 1. Review and adjust resource limits based on actual usage patterns
+# 2. Verify TLS certificate configuration in application-secrets
+# 3. Ensure network policies allow traffic to backend and frontend services
+# 4. Validate nginx.conf settings match the application architecture
+# 5. Configure monitoring and logging integrations for production
+
+# Requirement Addressed:
+# - Nginx Deployment in Kubernetes (7.5 Deployment Architecture/7.5.1 Infrastructure Requirements)
+#   Provides a scalable and resilient deployment configuration for the Nginx reverse proxy
+#   in a Kubernetes environment.
+
+# Nginx Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: default
+  labels:
+    app: nginx
+  annotations:
+    kubernetes.io/description: "Nginx reverse proxy deployment for backend services"
+spec:
+  # Configure horizontal scaling with 3 replicas for high availability
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "80"
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.21.6
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          # Environment variables from ConfigMap and Secrets
+          envFrom:
+            - configMapRef:
+                name: application-config
+            - secretRef:
+                name: application-secrets
+          # Resource limits and requests
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+          # Health monitoring configuration
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          # Volume mounts for Nginx configuration
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+      # Volumes definition
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: application-config
+            items:
+              - key: nginx.conf
+                path: nginx.conf
+
+---
+# Nginx Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: default
+  labels:
+    app: nginx
+  annotations:
+    kubernetes.io/description: "Nginx reverse proxy service"
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
