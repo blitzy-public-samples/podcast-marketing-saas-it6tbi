@@ -1,0 +1,31 @@
+# Requirement Addressed:
+# - Backend Autoscaling in Kubernetes (7.5 Deployment Architecture/7.5.1 Infrastructure Requirements)
+#   Provides an HPA configuration to dynamically scale the backend pods based on CPU utilization.
+
+# Human Tasks:
+# 1. Verify that metrics-server is installed and running in the cluster
+# 2. Monitor initial scaling behavior and adjust thresholds if needed
+# 3. Consider adding memory-based scaling metrics if required
+# 4. Ensure backend deployment has resource requests/limits properly configured
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend-hpa
+  namespace: default
+  labels:
+    app: backend
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend-deployment
+  minReplicas: 3
+  maxReplicas: 15
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
