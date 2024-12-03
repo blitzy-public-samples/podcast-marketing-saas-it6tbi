@@ -1,0 +1,32 @@
+# Requirement Addressed: Optimized Docker Builds (7.5 Deployment Architecture/7.5.1 Infrastructure Requirements)
+# Ensures that unnecessary files are excluded from the Docker build context, reducing build time and image size.
+
+# Python bytecode cache directories
+**/__pycache__/
+
+# Compiled Python files
+**/*.pyc
+
+# Environment variable files
+.env
+
+# Git repository metadata
+.git
+
+# Test files and directories
+tests/
+
+# Documentation files
+README.md
+
+# Local development scripts
+scripts/
+
+# Django migration files
+migrations/
+
+# Node.js dependencies
+node_modules/
+
+# Log files
+*.log
