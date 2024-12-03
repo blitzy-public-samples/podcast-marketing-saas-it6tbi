@@ -1,0 +1,52 @@
+{
+  // Requirement: Code Quality and Formatting (9.5.1 Development Environment)
+  // Maximum line length before wrapping
+  "printWidth": 80,
+  
+  // Number of spaces per indentation level
+  "tabWidth": 2,
+  
+  // Use spaces instead of tabs
+  "useTabs": false,
+  
+  // Add semicolons at the end of statements
+  "semi": true,
+  
+  // Use single quotes instead of double quotes
+  "singleQuote": true,
+  
+  // Add trailing commas in objects and arrays
+  "trailingComma": "es5",
+  
+  // Add spaces between brackets in object literals
+  "bracketSpacing": true,
+  
+  // Put the closing bracket of JSX elements on a new line
+  "jsxBracketSameLine": false,
+  
+  // Always add parentheses around arrow function parameters
+  "arrowParens": "always",
+  
+  // Requirement: Frontend Dependencies Management (9.2 Frameworks & Libraries)
+  // Configure overrides for specific file types
+  "overrides": [
+    {
+      "files": "*.{ts,tsx}",
+      "options": {
+        "parser": "typescript"
+      }
+    },
+    {
+      "files": "*.{css,scss}",
+      "options": {
+        "parser": "css"
+      }
+    },
+    {
+      "files": "*.json",
+      "options": {
+        "parser": "json"
+      }
+    }
+  ]
+}
