@@ -1,0 +1,108 @@
+# Human Tasks:
+# 1. Verify storage capacity matches application requirements
+# 2. Ensure storage path exists on host nodes if using hostPath
+# 3. Review storage class configuration for cloud provider compatibility
+# 4. Validate access modes with application deployment requirements
+
+# Requirement Addressed:
+# - Persistent Storage Management (7.5 Deployment Architecture/7.5.1 Infrastructure Requirements)
+#   Ensures that stateful applications have access to reliable and scalable persistent storage
+#   in the Kubernetes cluster.
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: application-pv
+  namespace: default
+  labels:
+    app: storage
+  annotations:
+    description: "Persistent volume for stateful application data"
+    kubernetes.io/pv-protection: "true"
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: dynamic-storage-class
+  # AWS EBS-specific configuration, aligned with storage class
+  awsElasticBlockStore:
+    volumeID: vol-xxxxx # This will be dynamically provisioned
+    fsType: ext4
+  # Mount options for optimal performance
+  mountOptions:
+    - noatime
+    - nodiratime
+  # Node affinity to ensure volume is scheduled on nodes in the correct zone
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: topology.kubernetes.io/zone
+              operator: In
+              values:
+                - us-east-1a
+                - us-east-1b
+                - us-east-1c
+
+---
+# PersistentVolumeClaim for Redis data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-data-pvc
+  namespace: default
+  labels:
+    app: redis
+  annotations:
+    description: "PVC for Redis data persistence"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: dynamic-storage-class
+  volumeMode: Filesystem
+
+---
+# PersistentVolumeClaim for backend data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backend-data-pvc
+  namespace: default
+  labels:
+    app: backend
+  annotations:
+    description: "PVC for backend application data"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: dynamic-storage-class
+  volumeMode: Filesystem
+
+---
+# PersistentVolumeClaim for Nginx data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nginx-data-pvc
+  namespace: default
+  labels:
+    app: nginx
+  annotations:
+    description: "PVC for Nginx static files and logs"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: dynamic-storage-class
+  volumeMode: Filesystem
