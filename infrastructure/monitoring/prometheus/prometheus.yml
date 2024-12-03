@@ -1,0 +1,75 @@
+# Prometheus configuration file v2.45.0
+# Addresses requirement 7.4.1 Monitoring and Observability: Provides configuration for Prometheus 
+# to collect metrics from backend, frontend, and infrastructure components.
+
+global:
+  # Global settings for scraping intervals and evaluation
+  scrape_interval: 15s     # Set the scrape interval to every 15 seconds
+  evaluation_interval: 15s # Evaluate rules every 15 seconds
+
+# Scrape configurations containing endpoints to scrape
+scrape_configs:
+  # Backend service monitoring
+  - job_name: 'backend'
+    static_configs:
+      - targets: ['backend-service:8000']
+    metrics_path: '/metrics'
+    scheme: 'http'
+    follow_redirects: true
+    honor_labels: true
+    honor_timestamps: true
+
+  # Frontend service monitoring
+  - job_name: 'frontend'
+    static_configs:
+      - targets: ['frontend-service:3000']
+    metrics_path: '/metrics'
+    scheme: 'http'
+    follow_redirects: true
+    honor_labels: true
+    honor_timestamps: true
+
+  # Infrastructure monitoring (node-exporter)
+  - job_name: 'infrastructure'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    metrics_path: '/metrics'
+    scheme: 'http'
+    follow_redirects: true
+    honor_labels: true
+    honor_timestamps: true
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    metrics_path: '/metrics'
+    scheme: 'http'
+
+# Alert manager configuration (if alert manager is set up)
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # AlertManager endpoints can be added here when configured
+          # - 'alertmanager:9093'
+
+# Rule files specifying recording and alerting rules
+rule_files:
+  # Rules can be added here when configured
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# Storage configuration
+storage:
+  tsdb:
+    path: /prometheus
+    retention:
+      time: 15d
+      size: 50GB
+
+# Web configuration
+web:
+  listen_address: 0.0.0.0:9090
+  external_url: http://localhost:9090
+  page_title: Podcast Marketing Automation Monitoring
