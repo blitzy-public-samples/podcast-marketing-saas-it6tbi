@@ -1,0 +1,57 @@
+# Grafana v9.5.0 Data Sources Configuration
+# Addresses requirement 7.4.1 Monitoring and Observability:
+# Provides configuration for Grafana to connect to Prometheus and Elasticsearch
+# for visualizing metrics and logs.
+
+# Human Tasks:
+# 1. Verify Prometheus service is accessible at http://prometheus:9090
+# 2. Verify Elasticsearch service is accessible at http://elasticsearch:9200
+# 3. Ensure network connectivity between Grafana and the data sources
+# 4. Validate authentication requirements if data sources are secured
+
+apiVersion: 1
+
+# Define the data sources that Grafana will use
+datasources:
+  # Primary metrics data source - Prometheus
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    version: 1
+    editable: true
+    jsonData:
+      timeInterval: "15s"        # Matches Prometheus scrape interval
+      queryTimeout: "60s"
+      httpMethod: "POST"
+      manageAlerts: true
+      prometheusType: "Prometheus"
+      prometheusVersion: "2.45.0"  # Matching Prometheus config version
+      exemplarTraceIdDestinations: []
+    secureJsonData: {}
+    
+  # Logging data source - Elasticsearch
+  - name: Elasticsearch
+    type: elasticsearch
+    access: proxy
+    url: http://elasticsearch:9200
+    isDefault: false
+    version: 1
+    editable: true
+    jsonData:
+      timeField: "@timestamp"
+      esVersion: "8.x"          # Latest stable Elasticsearch version
+      maxConcurrentShardRequests: 5
+      timeInterval: "10s"
+      logMessageField: "message"
+      logLevelField: "level"
+      dataLinks: []
+    secureJsonData: {}
+
+# Delete data sources that are not configured above
+deleteDatasources:
+  - name: Prometheus
+    orgId: 1
+  - name: Elasticsearch
+    orgId: 1
