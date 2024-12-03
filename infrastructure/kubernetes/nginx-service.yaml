@@ -1,0 +1,40 @@
+# Human Tasks:
+# 1. Verify service port configuration matches application requirements
+# 2. Ensure network policies allow traffic to this service
+# 3. Review and adjust service type based on environment needs (ClusterIP vs LoadBalancer)
+# 4. Configure external load balancer settings if using LoadBalancer type
+
+# Requirement Addressed:
+# - Nginx Service in Kubernetes (7.5 Deployment Architecture/7.5.1 Infrastructure Requirements)
+#   Provides a service configuration to expose the Nginx reverse proxy within the Kubernetes cluster.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: default
+  labels:
+    app: nginx
+  annotations:
+    kubernetes.io/description: "Nginx reverse proxy service for backend services"
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "80"
+spec:
+  # Selector matches the labels defined in nginx-deployment.yaml
+  selector:
+    app: nginx
+  # Port configuration for HTTP traffic
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80  # Port exposed by the service
+      targetPort: 80  # Port on the pod to forward traffic to
+  # Using ClusterIP for internal cluster access
+  # Change to LoadBalancer for external access if needed
+  type: ClusterIP
+  # Session affinity configuration
+  sessionAffinity: None
+  # IP family policy configuration
+  ipFamilyPolicy: SingleStack
+  ipFamilies:
+    - IPv4
