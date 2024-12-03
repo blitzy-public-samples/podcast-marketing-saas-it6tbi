@@ -1,0 +1,115 @@
+# Human Tasks:
+# 1. Create a Kubernetes secret named 'redis-secret' containing the Redis password
+# 2. Create a ConfigMap named 'redis-config' containing the Redis configuration
+# 3. Ensure network policies allow communication on port 6379
+# 4. Verify storage class availability for persistent volumes if needed
+
+# Requirement addressed: Redis Deployment in Kubernetes (7.5 Deployment Architecture/7.5.1 Infrastructure Requirements)
+# This deployment configuration manages Redis pods within the Kubernetes cluster
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+  namespace: default
+  labels:
+    app: redis
+  annotations:
+    kubernetes.io/description: "Redis deployment for high availability caching layer"
+    app.kubernetes.io/version: "6.2.6"
+    app.kubernetes.io/component: "cache"
+spec:
+  # Configure 3 replicas for high availability
+  replicas: 3
+  # Define update strategy
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  # Pod selector matching
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "6379"
+    spec:
+      # Security context for the pod
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+        runAsNonRoot: true
+      containers:
+        - name: redis
+          image: redis:6.2.6
+          imagePullPolicy: IfNotPresent
+          # Command to use custom redis.conf
+          command: ["redis-server"]
+          args: ["/usr/local/etc/redis/redis.conf"]
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: password
+          # Resource limits and requests
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          # Liveness probe configuration
+          livenessProbe:
+            tcpSocket:
+              port: redis
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            periodSeconds: 10
+          # Readiness probe configuration
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+            periodSeconds: 10
+          # Volume mounts for Redis configuration
+          volumeMounts:
+            - name: redis-config
+              mountPath: /usr/local/etc/redis/redis.conf
+              subPath: redis.conf
+              readOnly: true
+      # Volumes definition
+      volumes:
+        - name: redis-config
+          configMap:
+            name: redis-config
+            items:
+              - key: redis.conf
+                path: redis.conf
+      # Pod scheduling and anti-affinity rules
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - redis
+                topologyKey: kubernetes.io/hostname
+      # Termination grace period
+      terminationGracePeriodSeconds: 60
