@@ -98,7 +98,7 @@ jobs:
       # Upload test results and coverage reports
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: |
@@ -162,7 +162,7 @@ jobs:
           docker save backend:${{ github.sha }} | gzip > backend-image.tar.gz
 
       - name: Upload Docker image artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docker-image
           path: backend-image.tar.gz
