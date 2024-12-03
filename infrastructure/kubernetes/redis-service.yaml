@@ -1,0 +1,30 @@
+# Requirement addressed: Redis Service in Kubernetes (7.5 Deployment Architecture/7.5.1 Infrastructure Requirements)
+# This service configuration exposes Redis pods within the Kubernetes cluster for internal communication
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: default
+  labels:
+    app: redis
+  annotations:
+    kubernetes.io/description: "Redis service for internal cluster communication"
+    app.kubernetes.io/component: "cache"
+    app.kubernetes.io/version: "6.2.6"
+spec:
+  # Use ClusterIP type since Redis should only be accessible within the cluster
+  type: ClusterIP
+  # Selector matches the labels defined in redis-deployment.yaml
+  selector:
+    app: redis
+  ports:
+    - name: redis
+      protocol: TCP
+      port: 6379  # Service port
+      targetPort: 6379  # Container port
+  # Session affinity ensures requests from the same client go to the same pod
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800  # 3 hours
