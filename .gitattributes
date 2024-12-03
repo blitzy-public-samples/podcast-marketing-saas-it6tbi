@@ -1,0 +1,71 @@
+# Git attributes configuration for consistent repository behavior
+# Addresses requirements:
+# - Cross-Platform Compatibility (9.5 Development & Deployment/Development Environment)
+# - Repository Hygiene (1.2 System Overview/High-Level Description)
+
+# Default behavior: handle line endings automatically for all text files
+* text=auto
+
+# Enforce LF line endings for specific file types
+*.eol eol=lf
+
+# Explicitly declare text files to ensure consistent handling
+*.md text
+*.json text
+*.yml text
+
+# Shell scripts must use LF endings and be treated as text
+*.sh text eol=lf
+
+# Ensure consistent handling of common development files
+*.py text diff=python
+*.js text diff=javascript
+*.jsx text diff=javascript
+*.ts text diff=typescript
+*.tsx text diff=typescript
+*.css text diff=css
+*.html text diff=html
+*.xml text diff=xml
+*.sql text
+*.properties text
+*.conf text
+*.config text
+*.yaml text
+*.toml text
+*.ini text
+
+# Binary files that should not be modified
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.svg text
+
+# Docker files
+Dockerfile text
+*.dockerfile text
+.dockerignore text
+
+# Terraform files
+*.tf text diff=terraform
+*.tfvars text
+
+# Documentation
+LICENSE text
+README text
+CHANGELOG text
+CONTRIBUTING text
+
+# Ensure consistent handling of CI/CD configuration files
+.github/** text
+.gitlab-ci.yml text
+.travis.yml text
+.circleci/** text
