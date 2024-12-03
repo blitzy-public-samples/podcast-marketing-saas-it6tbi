@@ -1,0 +1,109 @@
+# Kibana Configuration v8.10.0
+# Purpose: Visualization and exploration interface for log data stored in Elasticsearch
+# Requirement addressed: 7.4 Cross-Cutting Concerns/Monitoring and Observability - Log Visualization and Exploration
+
+# Human Tasks:
+# 1. Create and set appropriate permissions for data and log directories:
+#    sudo mkdir -p /var/lib/kibana /var/log/kibana
+#    sudo chown -R kibana:kibana /var/lib/kibana /var/log/kibana
+# 2. Update the Elasticsearch password from the default 'changeme'
+# 3. Configure firewall rules to allow access to port 5601
+# 4. Set up SSL/TLS certificates if running in production
+# 5. Verify Elasticsearch connection is available before starting Kibana
+
+# Server Configuration
+server:
+  port: 5601                      # Port Kibana will listen on
+  host: "0.0.0.0"                 # Listen on all interfaces
+  name: "podcast-kibana"          # Unique name for this Kibana instance
+  maxPayloadBytes: 1048576        # Maximum payload size (1MB)
+  basePath: ""                    # Base path for reverse proxy support
+  rewriteBasePath: false          # Whether to rewrite base path
+  maxConcurrentConnections: 0     # Maximum concurrent connections (0 = unlimited)
+
+# Elasticsearch Connection
+elasticsearch:
+  hosts: ["http://127.0.0.1:9200"]    # Elasticsearch endpoints
+  username: "kibana_system"           # System user for Kibana
+  password: "changeme"                # Default password (should be changed)
+  requestTimeout: 30000               # Request timeout in milliseconds
+  shardTimeout: 30000                # Shard timeout in milliseconds
+  ssl:
+    verificationMode: full           # Verify SSL certificates
+    certificateAuthorities: []       # Custom CA certificates
+  pingTimeout: 3000                  # Ping timeout in milliseconds
+  requestHeadersWhitelist: ["authorization"] # Allowed headers
+
+# Kibana Core Settings
+pid:
+  file: /var/run/kibana/kibana.pid   # Process ID file location
+
+# Path Configuration
+path:
+  data: /var/lib/kibana              # Data storage location
+  logs: /var/log/kibana              # Log file location
+
+# Logging Configuration
+logging:
+  appenders:
+    file:
+      type: file
+      fileName: /var/log/kibana/kibana.log
+      layout:
+        type: json
+  root:
+    level: info                      # Log level (debug, info, warn, error)
+
+# Monitoring Configuration
+monitoring:
+  ui:
+    container:
+      elasticsearch:
+        enabled: true                # Enable Elasticsearch monitoring
+  enabled: true                      # Enable Kibana monitoring
+  kibana:
+    collection:
+      enabled: true                  # Collect Kibana metrics
+      interval: 10s                  # Collection interval
+
+# Security Configuration
+xpack:
+  security:
+    enabled: true                    # Enable security features
+    encryptionKey: "something_at_least_32_characters"  # Used to encrypt stored data
+    session:
+      idleTimeout: "1h"             # Session timeout
+      lifespan: "30d"               # Session lifespan
+
+# Search Configuration
+search:
+  timeout: "30s"                     # Search timeout
+  batchedReduceSize: 512            # Number of results to process in parallel
+
+# Saved Objects Configuration
+savedObjects:
+  maxImportPayloadBytes: 26214400   # Maximum import size (25MB)
+  maxImportExportSize: 10000        # Maximum number of objects to export
+
+# Telemetry Configuration
+telemetry:
+  enabled: false                     # Disable usage data collection
+
+# Memory Configuration
+ops:
+  interval: 5000                     # Operations sampling interval
+  cGroupOverrides:
+    cpuPath: ""                     # Custom cgroup CPU path
+    cpuAcctPath: ""                 # Custom cgroup CPU accounting path
+
+# Cache Configuration
+cache:
+  maxAge: 0                         # Browser cache max age
+
+# Map Configuration
+map:
+  includeElasticMapsService: false  # Disable Elastic Maps Service
+
+# i18n Configuration
+i18n:
+  locale: "en"                      # Default locale
