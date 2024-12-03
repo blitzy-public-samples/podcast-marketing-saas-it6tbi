@@ -1,0 +1,152 @@
+# Requirement addressed: 7.5 Deployment Architecture/CI/CD Pipeline
+# Automates the deployment of the production environment using GitHub Actions, Terraform, and Kubernetes
+
+name: Deploy Production Environment
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  KUBECONFIG: /home/runner/.kube/config
+  TERRAFORM_WORKSPACE: production
+
+jobs:
+  deploy:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+    environment: production
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      # Checkout repository code
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # Configure AWS credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Set up Terraform CLI
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "1.5.0"
+
+      # Initialize Terraform
+      - name: Initialize Terraform
+        working-directory: infrastructure/terraform/environments/production
+        run: |
+          terraform init
+          terraform workspace select production || terraform workspace new production
+
+      # Validate Terraform configuration
+      - name: Validate Terraform Configuration
+        working-directory: infrastructure/terraform/environments/production
+        run: terraform validate
+
+      # Plan Terraform changes
+      - name: Plan Terraform Changes
+        working-directory: infrastructure/terraform/environments/production
+        run: terraform plan -input=false
+        env:
+          TF_VAR_rds_password: ${{ secrets.RDS_PASSWORD }}
+          TF_VAR_redis_auth_token: ${{ secrets.REDIS_AUTH_TOKEN }}
+
+      # Apply Terraform changes
+      - name: Apply Terraform Changes
+        working-directory: infrastructure/terraform/environments/production
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve -input=false
+        env:
+          TF_VAR_rds_password: ${{ secrets.RDS_PASSWORD }}
+          TF_VAR_redis_auth_token: ${{ secrets.REDIS_AUTH_TOKEN }}
+
+      # Set up kubectl
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.25.0'
+
+      # Configure kubectl context
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --name podcast-marketing-production --region ${{ env.AWS_REGION }}
+
+      # Deploy Kubernetes secrets
+      - name: Deploy Secrets
+        run: |
+          kubectl apply -f infrastructure/kubernetes/secrets.yaml
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+
+      # Deploy Kubernetes ConfigMaps
+      - name: Deploy ConfigMaps
+        run: |
+          kubectl apply -f infrastructure/kubernetes/configmap.yaml
+
+      # Deploy Redis
+      - name: Deploy Redis
+        run: |
+          kubectl apply -f infrastructure/kubernetes/redis-deployment.yaml
+
+      # Deploy Backend Application
+      - name: Deploy Backend
+        run: |
+          kubectl apply -f infrastructure/kubernetes/backend-deployment.yaml
+          kubectl apply -f infrastructure/kubernetes/backend-service.yaml
+
+      # Deploy Frontend Application
+      - name: Deploy Frontend
+        run: |
+          kubectl apply -f infrastructure/kubernetes/frontend-deployment.yaml
+          kubectl apply -f infrastructure/kubernetes/frontend-service.yaml
+
+      # Configure Ingress
+      - name: Configure Ingress
+        run: |
+          kubectl apply -f infrastructure/kubernetes/ingress.yaml
+
+      # Verify Deployments
+      - name: Verify Deployments
+        run: |
+          kubectl wait --for=condition=available --timeout=300s deployment/backend-deployment
+          kubectl wait --for=condition=available --timeout=300s deployment/frontend-deployment
+          kubectl wait --for=condition=available --timeout=300s deployment/redis-deployment
+
+      # Notify on success
+      - name: Notify Success
+        if: success()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              body: '✅ Production deployment completed successfully!'
+            })
+
+      # Notify on failure
+      - name: Notify Failure
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              body: '❌ Production deployment failed. Please check the workflow logs for details.'
+            })
