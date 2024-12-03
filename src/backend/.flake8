@@ -1,0 +1,40 @@
+# Flake8 Configuration
+# Tool Version: flake8==6.0.0
+# Requirements Addressed:
+# - Code Quality and Consistency (7.3 Technical Decisions/7.3.1 Architecture Patterns)
+#   Ensures Python code adheres to PEP 8 standards and project-specific linting rules
+
+[flake8]
+# Set maximum line length to 88 characters to be compatible with black formatter
+max-line-length = 88
+
+# Exclude directories and files from linting
+exclude = 
+    .git,
+    __pycache__,
+    migrations,
+    venv,
+    node_modules
+
+# Ignore specific error codes:
+# E203: Whitespace before ':' (conflicts with black)
+# W503: Line break before binary operator (conflicts with black)
+ignore = E203,W503
+
+# Show the source code generating each error
+show-source = true
+
+# Count the number of occurrences of each error/warning code
+statistics = true
+
+# Set the maximum complexity allowed for a block of code
+max-complexity = 10
+
+# Output formatting
+format = %(path)s:%(row)d:%(col)d: %(code)s %(text)s
+
+# Set the number of spaces required for indentation
+indent-size = 4
+
+# Ensure proper docstring conventions
+docstring-convention = google
