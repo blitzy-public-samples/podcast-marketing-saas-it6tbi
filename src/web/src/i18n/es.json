@@ -1,0 +1,32 @@
+{
+  "welcome_message": "Bienvenido a la Plataforma de Automatización de Marketing de Podcasts",
+  "auth": {
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión"
+  },
+  "navigation": {
+    "dashboard": "Tablero",
+    "episodes": "Episodios",
+    "marketing": "Marketing",
+    "analytics": "Analíticas",
+    "settings": "Configuraciones"
+  },
+  "actions": {
+    "upload_episode": "Subir episodio",
+    "schedule_post": "Programar publicación",
+    "view_analytics": "Ver analíticas"
+  },
+  "preferences": {
+    "language": "Idioma",
+    "theme": {
+      "label": "Tema",
+      "dark_mode": "Modo oscuro",
+      "light_mode": "Modo claro"
+    }
+  },
+  "meta": {
+    "language_code": "es",
+    "language_name": "Español",
+    "direction": "ltr"
+  }
+}
