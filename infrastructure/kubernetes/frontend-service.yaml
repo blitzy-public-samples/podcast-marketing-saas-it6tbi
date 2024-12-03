@@ -1,0 +1,27 @@
+# Requirement Addressed:
+# - Frontend Service Configuration in Kubernetes (7.5 Deployment Architecture/7.5.1 Infrastructure Requirements)
+#   Provides a service configuration to expose the frontend application to external traffic and other services within the Kubernetes cluster.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: default
+  labels:
+    app: frontend
+  annotations:
+    kubernetes.io/description: "Frontend application service for React-based SPA"
+    app.kubernetes.io/component: "frontend"
+    app.kubernetes.io/version: "1.0.0"
+spec:
+  # Select pods with label app: frontend
+  selector:
+    app: frontend
+  # Define service ports
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80  # Service port
+      targetPort: 3000  # Container port where the React app is running
+  # Use ClusterIP for internal cluster communication
+  type: ClusterIP
