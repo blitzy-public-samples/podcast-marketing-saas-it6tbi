@@ -1,0 +1,62 @@
+# Requirement: Frontend Containerization (7.5 Deployment Architecture/Production Environment)
+# Defines the multi-container Docker application for the frontend services
+version: '3.8'
+
+services:
+  # Frontend React application service
+  frontend:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+      - NEXT_PUBLIC_AUTH_URL=http://backend:8000/auth
+      - NEXT_PUBLIC_ANALYTICS_URL=http://backend:8000/analytics
+      - NEXT_PUBLIC_STORAGE_URL=http://backend:8000/storage
+      - NEXT_PUBLIC_ENVIRONMENT=production
+    # Requirement: Service Orchestration (7.3 Technical Decisions/7.3.1 Architecture Patterns)
+    depends_on:
+      - backend
+
+  # Backend service configuration
+  # Requirement: Backend and Frontend Integration (8.3 API Design/8.3.2 Interface Specifications)
+  backend:
+    image: backend:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings.production
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+      - db
+
+  # Redis service for caching and message broker
+  redis:
+    image: redis:6.2.6
+    ports:
+      - "6379:6379"
+
+  # PostgreSQL database service
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=app_db
+      - POSTGRES_USER=app_user
+      - POSTGRES_PASSWORD=secure_password
+    ports:
+      - "5432:5432"
+
+# Define named volumes for persistent data
+volumes:
+  postgres_data:
+  redis_data:
+
+# Define default network
+networks:
+  default:
+    driver: bridge
