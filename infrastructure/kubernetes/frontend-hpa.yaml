@@ -1,0 +1,49 @@
+# Human Tasks:
+# 1. Verify that the frontend deployment is running and healthy
+# 2. Monitor resource utilization metrics to validate scaling thresholds
+# 3. Adjust scaling thresholds based on actual production workload patterns
+# 4. Ensure metrics-server is deployed and functioning in the cluster
+
+# Requirement Addressed:
+# - Frontend Autoscaling (7.5 Deployment Architecture/7.5.1 Infrastructure Requirements)
+#   Ensures the frontend application scales dynamically based on resource utilization
+# - Resource Optimization (7.3 Technical Decisions/7.3.1 Architecture Patterns)
+#   Implements resource optimization by dynamically adjusting the number of frontend pods
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: frontend-hpa
+  namespace: default
+  labels:
+    app: frontend
+  annotations:
+    kubernetes.io/description: "HPA configuration for React-based frontend application"
+spec:
+  # Link to the frontend deployment for scaling
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: frontend-deployment
+  
+  # Scaling configuration
+  minReplicas: 2
+  maxReplicas: 10
+  
+  # Metrics used for scaling decisions
+  metrics:
+    # CPU utilization metric
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+    
+    # Memory utilization metric
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 75
