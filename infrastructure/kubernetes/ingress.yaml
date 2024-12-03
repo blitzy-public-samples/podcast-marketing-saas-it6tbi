@@ -1,0 +1,45 @@
+# Requirement Addressed:
+# - Ingress Configuration in Kubernetes (7.5 Deployment Architecture/7.5.1 Infrastructure Requirements)
+#   Provides an ingress configuration to route external traffic to the appropriate backend and frontend services
+#   within the Kubernetes cluster.
+
+# Version: Kubernetes v1.21+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: application-ingress
+  namespace: default
+  labels:
+    app: ingress
+  annotations:
+    # Enable path-based routing with rewrite rules
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    # Force SSL/TLS for all requests
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # Set maximum request body size to 10MB
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    # Add description for better maintainability
+    kubernetes.io/description: "Main ingress for routing external traffic to backend and frontend services"
+spec:
+  # Define routing rules for the domain
+  rules:
+    - host: example.com
+      http:
+        paths:
+          # Route /api traffic to backend service
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend-service
+                port:
+                  number: 8000
+          
+          # Route all other traffic to frontend service
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 80
