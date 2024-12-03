@@ -1,0 +1,24 @@
+# Kubernetes StorageClass for dynamic storage provisioning
+# Version: Kubernetes 1.21+
+# Purpose: Defines storage class for dynamically provisioning persistent volumes
+# Requirement Addressed: Dynamic Storage Provisioning (Section 7.5.1)
+#   - Enables dynamic provisioning of persistent volumes for stateful applications
+#   - Supports Redis, backend services, and Nginx deployments
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: dynamic-storage-class
+  annotations:
+    # Set as default storage class for automatic PV provisioning
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  # Use gp2 volume type for balanced performance and cost
+  type: gp2
+  # Set filesystem type for the volumes
+  fsType: ext4
+# Delete volumes when PVCs are deleted
+reclaimPolicy: Delete
+# Wait for pod scheduling before provisioning volumes
+volumeBindingMode: WaitForFirstConsumer
