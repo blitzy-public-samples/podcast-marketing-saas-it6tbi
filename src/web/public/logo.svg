@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Requirement: UI Consistency (8.1 User Interface Design/Design Specifications/Visual Hierarchy)
+This SVG logo maintains consistent branding across the application
+-->
+<!-- 
+Requirement: Responsive Design (8.1 User Interface Design/Design Specifications/Responsive Design)
+SVG format ensures scalability across different screen sizes
+-->
+<!-- 
+Requirement: Accessibility (8.1 User Interface Design/Design Specifications/Accessibility)
+ARIA labels and title included for screen readers
+-->
+<svg 
+  width="100%" 
+  height="100%" 
+  viewBox="0 0 200 200" 
+  fill="none" 
+  xmlns="http://www.w3.org/2000/svg"
+  role="img"
+  aria-labelledby="logoTitle logoDesc"
+>
+  <title id="logoTitle">Podcast Marketing Automation Platform Logo</title>
+  <desc id="logoDesc">A modern logo representing podcast automation with interconnected circular elements</desc>
+
+  <!-- Background Circle -->
+  <circle 
+    cx="100" 
+    cy="100" 
+    r="90" 
+    fill="#0ea5e9" 
+    opacity="0.1"
+  />
+
+  <!-- Outer Ring -->
+  <circle
+    cx="100"
+    cy="100"
+    r="80"
+    stroke="#0ea5e9"
+    stroke-width="4"
+    fill="none"
+  />
+
+  <!-- Middle Ring with Gradient -->
+  <circle
+    cx="100"
+    cy="100"
+    r="60"
+    stroke="url(#primaryGradient)"
+    stroke-width="6"
+    fill="none"
+  >
+    <animate
+      attributeName="stroke-dashoffset"
+      from="0"
+      to="360"
+      dur="10s"
+      repeatCount="indefinite"
+    />
+  </circle>
+
+  <!-- Inner Ring -->
+  <circle
+    cx="100"
+    cy="100"
+    r="40"
+    stroke="#8b5cf6"
+    stroke-width="4"
+    fill="none"
+  />
+
+  <!-- Center Microphone Icon -->
+  <path
+    d="M100 70v60M85 90h30M85 110h30"
+    stroke="#0ea5e9"
+    stroke-width="6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Sound Wave Elements -->
+  <g>
+    <path
+      d="M70 100q-10 -20 0 -40"
+      stroke="#8b5cf6"
+      stroke-width="3"
+      fill="none"
+      opacity="0.7"
+    >
+      <animate
+        attributeName="d"
+        values="M70 100q-10 -20 0 -40;M70 100q-5 -20 -5 -40;M70 100q-10 -20 0 -40"
+        dur="2s"
+        repeatCount="indefinite"
+      />
+    </path>
+    <path
+      d="M130 100q10 -20 0 -40"
+      stroke="#8b5cf6"
+      stroke-width="3"
+      fill="none"
+      opacity="0.7"
+    >
+      <animate
+        attributeName="d"
+        values="M130 100q10 -20 0 -40;M130 100q5 -20 5 -40;M130 100q10 -20 0 -40"
+        dur="2s"
+        repeatCount="indefinite"
+      />
+    </path>
+  </g>
+
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Animation for Accessibility -->
+  <style>
+    @media (prefers-reduced-motion: reduce) {
+      circle, path {
+        animation: none !important;
+      }
+    }
+  </style>
+</svg>
