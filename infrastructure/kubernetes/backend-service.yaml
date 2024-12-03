@@ -1,0 +1,22 @@
+# Requirement Addressed:
+# - Backend Service Configuration in Kubernetes (7.5 Deployment Architecture/7.5.1 Infrastructure Requirements)
+#   Provides a service configuration to expose the backend application to other services within the Kubernetes cluster.
+
+# Version: Kubernetes v1.21+
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: default
+  labels:
+    app: backend
+spec:
+  # Selector matches the labels defined in backend-deployment.yaml
+  selector:
+    app: backend
+  # Port configuration for the service
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8000
+      targetPort: 8000
