@@ -1,0 +1,83 @@
+# Human Tasks:
+# 1. Review and adjust configuration values for each environment (staging/production)
+# 2. Ensure ConfigMap name matches the references in backend and Redis deployments
+# 3. Verify that the FRONTEND_API_BASE_URL matches the actual frontend service URL
+# 4. Validate Redis configuration values against Redis deployment requirements
+
+# Requirements Addressed:
+# - Non-Sensitive Configuration Management (7.5 Deployment Architecture/7.5.1 Infrastructure Requirements)
+#   Stores and manages non-sensitive configuration data securely within the Kubernetes cluster
+# - Environment-Specific Configuration (7.3 Technical Decisions/7.3.1 Architecture Patterns)
+#   Provides environment-specific configuration data for staging and production deployments
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: application-config
+  namespace: default
+  labels:
+    app: config
+  annotations:
+    description: "Application configuration for backend and Redis services"
+    environment: "production"
+data:
+  # Django backend configuration
+  DJANGO_SETTINGS_MODULE: "core.settings.production"
+  FRONTEND_API_BASE_URL: "https://api.example.com"
+  
+  # Redis configuration
+  REDIS_MAX_CONNECTIONS: "100"
+  
+  # Nginx configuration
+  NGINX_PROXY_TIMEOUT: "60s"
+
+---
+# Redis specific configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  namespace: default
+  labels:
+    app: redis
+    component: cache
+data:
+  redis.conf: |
+    # Redis configuration for high availability and performance
+    bind 0.0.0.0
+    protected-mode yes
+    port 6379
+    tcp-backlog 511
+    timeout 0
+    tcp-keepalive 300
+    daemonize no
+    supervised no
+    pidfile /var/run/redis_6379.pid
+    loglevel notice
+    logfile ""
+    databases 16
+    
+    # Memory management
+    maxmemory 2gb
+    maxmemory-policy allkeys-lru
+    maxmemory-samples 5
+    
+    # Performance tuning
+    activerehashing yes
+    lazyfree-lazy-eviction yes
+    lazyfree-lazy-expire yes
+    lazyfree-lazy-server-del yes
+    replica-lazy-flush yes
+    
+    # Client connection settings
+    maxclients 100  # Matches REDIS_MAX_CONNECTIONS from application config
+    
+    # Persistence configuration
+    appendonly yes
+    appendfilename "appendonly.aof"
+    appendfsync everysec
+    
+    # Security features
+    rename-command FLUSHDB ""
+    rename-command FLUSHALL ""
+    rename-command DEBUG ""
