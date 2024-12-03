@@ -1,0 +1,32 @@
+{
+  "welcome_message": "Bienvenue sur la plateforme d'automatisation du marketing de podcasts",
+  "auth": {
+    "login": "Connexion",
+    "logout": "Déconnexion"
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "episodes": "Épisodes",
+    "marketing": "Marketing",
+    "analytics": "Analyses",
+    "settings": "Paramètres"
+  },
+  "actions": {
+    "upload_episode": "Télécharger un épisode",
+    "schedule_post": "Programmer une publication",
+    "view_analytics": "Voir les analyses"
+  },
+  "preferences": {
+    "language": "Langue",
+    "theme": {
+      "label": "Thème",
+      "dark_mode": "Mode sombre",
+      "light_mode": "Mode clair"
+    }
+  },
+  "meta": {
+    "language_code": "fr",
+    "language_name": "Français",
+    "direction": "ltr"
+  }
+}
