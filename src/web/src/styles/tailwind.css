@@ -1,0 +1,144 @@
+/* tailwindcss v3.3.0 */
+/* postcss v8.4.21 */
+/* autoprefixer v10.4.13 */
+
+/**
+ * Human Tasks:
+ * 1. Verify that PostCSS and TailwindCSS are properly configured in the build pipeline
+ * 2. Test dark mode functionality across different browsers and devices
+ * 3. Validate that all custom theme extensions are correctly applied
+ * 4. Ensure responsive utilities work correctly across all breakpoints
+ * 5. Test color contrast ratios in both light and dark modes
+ */
+
+/* Requirement: Frontend Architecture (1.2 System Overview/High-Level Description) */
+/* Base Tailwind directives for generating utility classes */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import global styles for base styling consistency */
+@import './globals.css';
+
+/* Requirement: Theme Support (8.1 User Interface Design/Design Specifications) */
+/* Dark mode configuration using class strategy */
+.dark {
+  color-scheme: dark;
+}
+
+/* Requirement: UI Consistency (8.1 User Interface Design/Design Specifications/Visual Hierarchy) */
+@layer base {
+  /* Base HTML element styles */
+  html {
+    @apply antialiased;
+    text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-neutral-50 text-neutral-900 dark:bg-neutral-900 dark:text-neutral-50;
+    @apply min-h-screen;
+  }
+
+  /* Focus styles for better accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  }
+}
+
+/* Requirement: Responsive Design (8.1 User Interface Design/Design Specifications) */
+@layer components {
+  /* Container styles for consistent layout */
+  .container {
+    @apply mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-7xl;
+  }
+
+  /* Responsive typography scale */
+  .h1 {
+    @apply text-4xl sm:text-5xl font-bold tracking-tight;
+  }
+
+  .h2 {
+    @apply text-3xl sm:text-4xl font-semibold tracking-tight;
+  }
+
+  .h3 {
+    @apply text-2xl sm:text-3xl font-semibold tracking-tight;
+  }
+
+  .h4 {
+    @apply text-xl sm:text-2xl font-semibold;
+  }
+
+  /* Common layout patterns */
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  .grid-responsive {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+}
+
+@layer utilities {
+  /* Custom utility classes */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Animation utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-in-out;
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  /* Responsive padding utilities */
+  .responsive-p {
+    @apply p-4 sm:p-6 lg:p-8;
+  }
+
+  /* Responsive margin utilities */
+  .responsive-m {
+    @apply m-4 sm:m-6 lg:m-8;
+  }
+
+  /* Responsive gap utilities */
+  .responsive-gap {
+    @apply gap-4 sm:gap-6 lg:gap-8;
+  }
+}
+
+/* Custom keyframes for animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
