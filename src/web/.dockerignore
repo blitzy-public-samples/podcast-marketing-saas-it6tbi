@@ -1,0 +1,27 @@
+# Requirement: Optimized Docker Build (9.5 Development & Deployment/9.5.1 Development Environment)
+# Node.js dependencies and package management
+node_modules/
+*.log
+*.lock
+
+# Build output and artifacts
+dist/
+.next/
+coverage/
+logs/
+
+# Environment and configuration files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Public assets that are dynamically generated
+public/
+
+# System files
+.DS_Store
+
+# Development files
+*.lock
