@@ -1,0 +1,124 @@
+# Elasticsearch Configuration v8.10.0
+# Purpose: Central component for storing, searching, and analyzing log data
+# Requirement addressed: 7.4 Cross-Cutting Concerns/Monitoring and Observability - Log Storage and Search
+
+# Human Tasks:
+# 1. Create and set appropriate permissions for data and log directories:
+#    sudo mkdir -p /var/lib/elasticsearch /var/log/elasticsearch
+#    sudo chown -R elasticsearch:elasticsearch /var/lib/elasticsearch /var/log/elasticsearch
+# 2. Generate and configure SSL/TLS certificates for secure communication
+# 3. Update the Kibana system password from the default 'changeme'
+# 4. Configure system limits for elasticsearch user:
+#    - Set vm.max_map_count=262144
+#    - Set ulimit -n 65535
+# 5. Ensure sufficient disk space for data directory (recommended: 50% of available disk)
+
+# Cluster Configuration
+cluster:
+  name: elk-cluster                      # Matches CLUSTER_NAME global variable
+  initial_master_nodes: ["node-1"]       # Bootstrap initial cluster formation
+  routing.allocation.disk.threshold_enabled: true
+  routing.allocation.disk.watermark.low: "85%"
+  routing.allocation.disk.watermark.high: "90%"
+  routing.allocation.disk.watermark.flood_stage: "95%"
+
+# Node Configuration
+node:
+  name: node-1                           # Matches NODE_NAME global variable
+  roles: [master, data, ingest]          # This node can perform all roles
+  master: true                           # Can be elected as master node
+  data: true                             # Stores and indexes data
+  ingest: true                           # Can perform ingest operations
+
+# Network Configuration
+network:
+  host: 0.0.0.0                          # Matches NETWORK_HOST global variable
+  bind_host: 0.0.0.0                     # Bind to all interfaces
+  publish_host: ${PUBLISH_HOST:0.0.0.0}  # Host to publish for client connections
+
+# HTTP Configuration
+http:
+  port: 9200                             # Matches HTTP_PORT global variable
+  compression: true                      # Enable compression for HTTP responses
+  cors:
+    enabled: true
+    allow-origin: ["http://localhost:5601", "http://127.0.0.1:5601"]  # Allow Kibana connections
+
+# Discovery Configuration
+discovery:
+  seed_hosts: ["127.0.0.1"]             # Initial hosts to ping for cluster discovery
+  type: single-node                      # Suitable for development/single-node deployments
+
+# Path Configuration
+path:
+  data: /var/lib/elasticsearch           # Directory for storing index data
+  logs: /var/log/elasticsearch           # Directory for storing log files
+
+# Memory Configuration
+bootstrap:
+  memory_lock: true                      # Lock JVM memory to prevent swapping
+
+# Security Configuration
+xpack.security:
+  enabled: true
+  transport.ssl:
+    enabled: true
+    verification_mode: certificate
+    keystore.path: config/elastic-certificates.p12
+    truststore.path: config/elastic-certificates.p12
+
+# Kibana Configuration
+xpack.security.authc:
+  api_key:
+    enabled: true
+  token:
+    enabled: true
+
+# Kibana Integration
+kibana:
+  elasticsearch:
+    hosts: ["http://127.0.0.1:9200"]     # Elasticsearch endpoints for Kibana
+    username: kibana_system              # System user for Kibana
+    password: changeme                   # Default password (should be changed)
+
+# Performance Configuration
+indices:
+  memory:
+    index_buffer_size: "10%"            # Memory allocated for indexing
+  recovery:
+    max_bytes_per_sec: "40mb"           # Throttle recovery operations
+  fielddata:
+    cache:
+      size: "20%"                       # Memory allocated for field data cache
+
+# Query Configuration
+search:
+  max_buckets: 10000                    # Maximum number of aggregation buckets
+  default_search_timeout: "30s"         # Default timeout for search operations
+
+# Monitoring Configuration
+xpack.monitoring:
+  collection:
+    enabled: true                       # Enable monitoring
+    interval: 10s                       # Collection interval
+
+# Thread Pool Configuration
+thread_pool:
+  write:
+    size: 4                            # Number of threads for write operations
+    queue_size: 1000                   # Queue size for write operations
+  search:
+    size: 7                            # Number of threads for search operations
+    queue_size: 1000                   # Queue size for search operations
+
+# Cache Configuration
+cache:
+  realtime: true                       # Enable realtime GET operations
+
+# Snapshot Configuration
+path.repo: ["/var/lib/elasticsearch/backup"]  # Path for snapshot repositories
+
+# Action Configuration
+action:
+  destructive_requires_name: true       # Prevent wildcard deletion of indices
+  auto_create_index: false             # Disable automatic index creation
