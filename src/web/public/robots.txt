@@ -1,0 +1,7 @@
+Allow: /
+
+# Disallow access to API endpoints
+Disallow: /api/
+
+# Disallow access to admin pages
+Disallow: /admin/
