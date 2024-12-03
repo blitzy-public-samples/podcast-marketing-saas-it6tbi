@@ -1,0 +1,108 @@
+# Requirement Addressed: Containerized Deployment (7.5 Deployment Architecture/7.5.1 Infrastructure Requirements)
+# Facilitates the deployment of backend services in isolated containers for development and production environments.
+
+version: '3.8'
+
+services:
+  # Django backend service
+  backend:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings.production
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+      - db
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Redis service for caching and message broker
+  # Requirement Addressed: Service Orchestration (7.3 Technical Decisions/7.3.1 Architecture Patterns)
+  redis:
+    image: redis:6.2.6
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PostgreSQL database service
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=app_db
+      - POSTGRES_USER=app_user
+      - POSTGRES_PASSWORD=secure_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app_user -d app_db"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Nginx reverse proxy service
+  # Requirement Addressed: Backend and Frontend Integration (8.3 API Design/8.3.2 Interface Specifications)
+  nginx:
+    build:
+      context: ./infrastructure/docker/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Celery worker service for asynchronous tasks
+  celery_worker:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: celery -A core worker -l info
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings.production
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+      - db
+
+  # Celery beat service for scheduled tasks
+  celery_beat:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: celery -A core beat -l info
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings.production
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+      - db
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    driver: bridge
